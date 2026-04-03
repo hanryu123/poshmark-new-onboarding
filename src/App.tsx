@@ -1,16 +1,7 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { BrandStep } from "./BrandStep";
-
-const DEPARTMENTS = [
-  "Men's apparel",
-  "Women's apparel",
-  "Men's shoes",
-  "Women's shoes",
-  "Luxury",
-  "Beauty",
-  "Kids",
-  "Home",
-];
+import { CategoryStep } from "./CategoryStep";
+import type { CategorySelectionPayload } from "./types/onboarding";
 
 const AGE_OPTIONS = [
   "10-19",
@@ -31,14 +22,9 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>(1);
   const [gender, setGender] = useState<string | null>(null);
   const [age, setAge] = useState<string | null>(null);
-  const [department, setDepartment] = useState<string | null>(null);
-  const [deptSearch, setDeptSearch] = useState("");
-
-  const filteredDepts = useMemo(() => {
-    const q = deptSearch.trim().toLowerCase();
-    if (!q) return DEPARTMENTS;
-    return DEPARTMENTS.filter((d) => d.toLowerCase().includes(q));
-  }, [deptSearch]);
+  const [categories, setCategories] = useState<CategorySelectionPayload | null>(
+    null
+  );
 
   const canContinue1 = Boolean(gender && age);
 
@@ -137,60 +123,12 @@ export default function App() {
             }}
           />
 
-          <h1 className="mt-6 font-display text-[1.65rem] font-bold leading-snug tracking-tight text-ink md:text-[1.85rem]">
-            What brings you to Poshmark?
-          </h1>
-
-          <div className="relative mt-8">
-            <svg
-              className="pointer-events-none absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              aria-hidden
-            >
-              <circle cx="11" cy="11" r="7" />
-              <path d="M20 20l-3-3" />
-            </svg>
-            <input
-              type="search"
-              placeholder="Looking for a specific item?"
-              autoComplete="off"
-              value={deptSearch}
-              onChange={(e) => setDeptSearch(e.target.value)}
-              className="w-full border-0 border-b border-line bg-transparent py-2.5 pl-8 pr-2 text-[15px] text-ink placeholder:text-neutral-400 focus:border-ink focus:outline-none focus:ring-0"
-            />
-          </div>
-
-          <p className="mb-3 mt-10 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">
-            Departments
-          </p>
-          <ul className="divide-y divide-line border-t border-line" role="list">
-            {filteredDepts.map((name) => (
-              <li key={name}>
-                <button
-                  type="button"
-                  onClick={() => setDepartment(name)}
-                  className="flex w-full items-center justify-between py-4 text-left text-[15px] font-medium text-ink transition-colors hover:bg-neutral-50"
-                >
-                  <span>{name}</span>
-                  <span className="text-neutral-300" aria-hidden>
-                    ›
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
-
-          <div className="flex-1" />
-          <button
-            type="button"
-            onClick={() => setScreen(3)}
-            className="mt-10 w-full rounded-lg bg-ink py-4 text-[15px] font-semibold text-paper"
-          >
-            Continue
-          </button>
+          <CategoryStep
+            onContinue={(data) => {
+              setCategories(data);
+              setScreen(3);
+            }}
+          />
         </section>
       )}
 
@@ -212,7 +150,19 @@ export default function App() {
             onFinish={(brands) =>
               window.alert(
                 "Done — " +
-                  JSON.stringify({ gender, age, department, brands }, null, 2)
+                  JSON.stringify(
+                    {
+                      gender,
+                      age,
+                      categories: categories ?? {
+                        departments: [],
+                        searchKeywords: [],
+                      },
+                      brands,
+                    },
+                    null,
+                    2
+                  )
               )
             }
           />
