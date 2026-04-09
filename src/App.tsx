@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { BrandStep } from "./BrandStep";
 import { CategoryStep } from "./CategoryStep";
 import type { CategorySelectionPayload } from "./types/onboarding";
@@ -18,12 +18,45 @@ const AGE_OPTIONS = [
 
 type Screen = 1 | 2 | 3;
 
+type UrlBootstrap = {
+  screen: Screen;
+  gender: string | null;
+  age: string | null;
+  categories: CategorySelectionPayload | null;
+};
+
+/** Read once per mount; useEffect alone can run after paint and fail user expectations on prod/cached loads. */
+function bootstrapFromUrl(): UrlBootstrap {
+  if (typeof window === "undefined") {
+    return { screen: 1, gender: null, age: null, categories: null };
+  }
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("step") !== "3") {
+    return { screen: 1, gender: null, age: null, categories: null };
+  }
+  return {
+    screen: 3,
+    gender: "woman",
+    age: "25-29",
+    categories: {
+      departments: [{ label: "Bags" }],
+      searchKeywords: [],
+    },
+  };
+}
+
 export default function App() {
-  const [screen, setScreen] = useState<Screen>(1);
-  const [gender, setGender] = useState<string | null>(null);
-  const [age, setAge] = useState<string | null>(null);
+  const initialRef = useRef<UrlBootstrap | null>(null);
+  if (initialRef.current === null) {
+    initialRef.current = bootstrapFromUrl();
+  }
+  const initial = initialRef.current;
+
+  const [screen, setScreen] = useState<Screen>(initial.screen);
+  const [gender, setGender] = useState<string | null>(initial.gender);
+  const [age, setAge] = useState<string | null>(initial.age);
   const [categories, setCategories] = useState<CategorySelectionPayload | null>(
-    null
+    initial.categories
   );
 
   const canContinue1 = Boolean(gender && age);
