@@ -2,8 +2,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   INITIAL_GRID,
+  diversePool,
   imageForBrand,
-  pickUniqueBrands,
+  pickMixedBrands,
   similarPool,
 } from "./brandAssets";
 
@@ -201,9 +202,18 @@ export function BrandStep(props: BrandStepProps) {
         });
         exclude.add(seedBrand);
 
-        const pool = similarPool(seedBrand);
+        const similar = similarPool(seedBrand);
+        const diverse = diversePool(seedBrand, similar);
         const need = SLOT_COUNT - 1;
-        const picked = pickUniqueBrands(need, pool, exclude, FALLBACK_BRANDS);
+        // 70% related + 30% diverse — see pickMixedBrands docs for rationale.
+        const picked = pickMixedBrands({
+          count: need,
+          similar,
+          diverse,
+          exclude,
+          fallback: FALLBACK_BRANDS,
+          similarRatio: 0.7,
+        });
 
         let k = 0;
         return prev.map((slot, i) => {
@@ -328,7 +338,10 @@ export function BrandStep(props: BrandStepProps) {
         </motion.div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 z-[90] bg-gradient-to-t from-paper via-paper to-transparent px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-10">
+      <div
+        className="fixed left-0 right-0 z-[90] bg-gradient-to-t from-paper via-paper to-transparent px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-10"
+        style={{ bottom: "var(--dev-nav-h, 0px)" }}
+      >
         <button
           type="button"
           disabled={!canFinish}

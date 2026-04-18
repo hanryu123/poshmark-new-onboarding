@@ -228,7 +228,7 @@ export function CategoryStep({ onContinue }: CategoryStepProps) {
                 onClick={addKeyword}
                 className="shrink-0 rounded-lg bg-ink px-3 py-2 text-[13px] font-semibold text-paper"
               >
-                Add
+                Search
               </button>
             </div>
             <p className="mt-2 text-[11px] text-muted">

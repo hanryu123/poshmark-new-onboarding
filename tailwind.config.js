@@ -15,6 +15,11 @@ export default {
         finish: "#4A2F35",
         /** Disabled primary CTA — dusty rose like reference */
         "finish-muted": "#D4B8BC",
+        /** Poshmark brand palette */
+        "posh-pink": "#E91E63",
+        "posh-pink-dark": "#B7124C",
+        "posh-burgundy": "#821E3F",
+        "posh-blush": "#FCE4EC",
       },
       boxShadow: {
         bubble: "0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)",

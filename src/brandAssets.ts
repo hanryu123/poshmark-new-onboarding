@@ -203,6 +203,29 @@ export function similarPool(seed: string): string[] {
   return [...list];
 }
 
+/** Universe of all known brands — used as the source for diverse/discovery picks. */
+const ALL_BRANDS: string[] = Object.keys(BRAND_IMAGE).filter((k) => k !== "default");
+
+/**
+ * Brands that are *intentionally different* from the seed:
+ *   universe \ (seed ∪ similar)
+ * Surfacing these helps uncover the user's hidden preferences instead of
+ * collapsing the whole grid into a single mood/category.
+ */
+export function diversePool(seed: string, similar: string[]): string[] {
+  const exclude = new Set<string>([seed, ...similar]);
+  return ALL_BRANDS.filter((b) => !exclude.has(b));
+}
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 /** Pick `count` unique brand names, preferring `pool`, then `fallback`. */
 export function pickUniqueBrands(
   count: number,
@@ -234,4 +257,32 @@ export function pickUniqueBrands(
   }
 
   return out.slice(0, count);
+}
+
+/**
+ * Mixed grid generator: ~70% related brands, ~30% diverse/trending picks,
+ * then everything is shuffled so the discovery picks aren't bunched together.
+ *
+ * The 30% slice is the discovery engine — it surfaces brands deliberately
+ * outside the user's stated taste so we can read latent signal from what they
+ * (don't) tap on next.
+ */
+export function pickMixedBrands(params: {
+  count: number;
+  similar: string[];
+  diverse: string[];
+  exclude: Set<string>;
+  fallback: string[];
+  similarRatio?: number;
+}): string[] {
+  const { count, similar, diverse, exclude, fallback, similarRatio = 0.7 } = params;
+
+  const similarTarget = Math.round(count * similarRatio);
+  const diverseTarget = count - similarTarget;
+
+  const sim = pickUniqueBrands(similarTarget, shuffle(similar), exclude, fallback);
+  const blocked = new Set<string>([...exclude, ...sim]);
+  const div = pickUniqueBrands(diverseTarget, shuffle(diverse), blocked, fallback);
+
+  return shuffle([...sim, ...div]).slice(0, count);
 }
