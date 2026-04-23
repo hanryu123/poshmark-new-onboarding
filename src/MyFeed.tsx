@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 
 export type MyFeedProps = {
   brands: string[];
+  /** Posh Live entry in the header (e.g. feed → live onboarding). */
+  liveEntry?: { onPress: () => void };
 };
 
 const FEED_ITEMS: { title: string; brand: string; price: string; old?: string; tone: string }[] = [
@@ -13,7 +15,7 @@ const FEED_ITEMS: { title: string; brand: string; price: string; old?: string; t
   { title: "Pleated Mini Skirt", brand: "& Other Stories", price: "$22", old: "$79", tone: "#FFCCBC" },
 ];
 
-export function MyFeed({ brands }: MyFeedProps) {
+export function MyFeed({ brands, liveEntry }: MyFeedProps) {
   return (
     <motion.section
       key="my-feed"
@@ -28,7 +30,16 @@ export function MyFeed({ brands }: MyFeedProps) {
         <span className="font-display text-[22px] font-semibold tracking-tight text-ink">
           My Feed
         </span>
-        <div className="flex items-center gap-3 text-ink">
+        <div className="flex items-center gap-2 text-ink">
+          {liveEntry ? (
+            <button
+              type="button"
+              onClick={liveEntry.onPress}
+              className="shrink-0 rounded-full bg-red-600 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide text-white shadow-sm transition-transform active:scale-95"
+            >
+              Live
+            </button>
+          ) : null}
           <IconBtn label="Search">🔍</IconBtn>
           <IconBtn label="Bag">🛍️</IconBtn>
         </div>

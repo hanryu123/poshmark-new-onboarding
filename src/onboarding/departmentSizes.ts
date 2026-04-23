@@ -1,0 +1,50 @@
+import type { Department } from "./types/onboarding.types";
+
+export const DEPARTMENT_ORDER: Department[] = [
+  "Women's Apparel",
+  "Men's Apparel",
+  "Women's Shoes",
+  "Men's Shoes",
+  "Luxury",
+  "Beauty",
+  "Kids",
+  "Home",
+];
+
+export const SIZES_BY_DEPARTMENT: Record<Department, string[] | null> = {
+  "Women's Apparel": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "XXL",
+    "0",
+    "2",
+    "4",
+    "6",
+    "8",
+    "10",
+    "12",
+    "14",
+  ],
+  "Men's Apparel": [
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "XXL",
+    "30",
+    "32",
+    "34",
+    "36",
+    "38",
+  ],
+  "Women's Shoes": ["5", "5.5", "6", "6.5", "7", "7.5", "8", "8.5", "9", "9.5", "10", "11"],
+  "Men's Shoes": ["7", "7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "12", "13"],
+  Luxury: null,
+  Beauty: null,
+  Kids: null,
+  Home: null,
+};
